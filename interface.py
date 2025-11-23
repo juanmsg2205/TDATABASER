@@ -1,6 +1,6 @@
 class Interface(object):
 
-    def __init__(self,dbconn):
+    def __init__(self, dbconn, cf1, cf2):
         self.dbconn = dbconn
 
     def interface_init(self):
@@ -28,6 +28,11 @@ class Interface(object):
                 date = input("Introduzca la fecha de inicio de contrato:")
                 self.dbconn.add_reg(fname, lname, peopleq, debt, paid, date)
                 print('Exito!')
+
+            elif opt == '3':
+                fname = input('Introduzca el nombre de la persona:')
+                self.dbconn.del_reg(fname)
+                print('Exito')
 
             elif opt == '4':
                 self.dbconn.closedb_save()

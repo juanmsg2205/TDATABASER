@@ -23,7 +23,7 @@ class Database(object):
         self.cursor.execute(script)
 
     def del_reg(self, fname):
-        script = f'DELETE FROM Excursion WHERE FNAME IN "{fname}"'
+        script = f'DELETE FROM Excursion WHERE FNAME IN ("{fname}")'
         self.cursor.execute(script)
 
     def myquery(self, fname):
