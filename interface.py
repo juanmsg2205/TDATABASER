@@ -4,6 +4,7 @@ class Interface(object):
         self.dbconn = dbconn
 
     def interface_init(self):
+        attributes = ['ID', 'Nombre', 'Apellido', 'No. Personas', 'Deuda', 'Pagado', 'Fecha']
         print('Interfaz iniciada correctamente!')
         print('\nQue desea hacer?\n')
 
@@ -17,6 +18,8 @@ class Interface(object):
                 fname = input('Introduzca el nombre de la persona:')
                 query = self.dbconn.myquery(fname)
                 print(query)
+                for column, attribute in zip(query[0], attributes):
+                    print(f'{attribute}: {column}')
                 print('Exito!')
 
             elif opt == '2':
