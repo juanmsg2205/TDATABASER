@@ -23,28 +23,28 @@ print(r'''############################################################
 #                        \|_________|                      #
 #                                                          #
 ############################################################
-0.2 By Gsoft''')
-
+0.3 By Gsoft''')
+#Menú principal
 opt = input('\nBienvenido a TDATABASER ¿Qué desea hacer?\n1) Crear o conectar a base de datos\n2) Acerca de\n3) Cerrar')
-if opt == '1':
+if opt == '1': #Opcion 1: Crear o conectarse a base de datos
     path = input('Introduzca la dirección de de la base de datos existente o por crear:\n')
     print('Inicializando sistema de ficheros...')
-    fsys = FileSystem(path)
+    fsys = FileSystem(path) #Creación de un objeto FileSystem con la ruta como argumento, para la administración del archivo de configuración
     print('Exito!')
-    db = Database(path)
+    db = Database(path) #Creación de un objeto Database con la ruta como argumento para la conexión o creación con la base de datos
     print('Comprobación de fichero...')
-    dbexists = fsys.dbc()
-    if dbexists == True:
+    dbexists = fsys.dbc() #Comprueba si la base de datos existe
+    if dbexists == True: #Si existe
         print('Comprobación exitosa!')
         print('Iniciando base de datos...')
-        db.create_table()
+        db.create_table() #Crea la tabla principal
         print('Exito!')
         print('Buscando archivo de configuración...')
-        fsys.configc()
-        cf1, cf2 = fsys.getcf()
+        fsys.configc() #Busca el archivo de configuración y comprueba su existencia (ver fsys.py)
+        cf1, cf2 = fsys.getcf() #Asigna las líneas de configuración a las variables para iniciar la interfaz
         print('Iniciando interfaz...')
-        interface = Interface(db, cf1, cf2)
-        interface.interface_init()
+        interface = Interface(db, fsys, cf1, cf2) #Crea la interfaz a partir del objeto Database, fsys y las líneas de configuración
+        interface.interface_init() #Inicializa la interfaz
     else:
         print('Error 011: El fichero no existe o la ruta es inválida.')
         print('Saliendo...')
@@ -55,7 +55,7 @@ a los registros de los clientes de excursiones turísticas.
             Programmer                           Application Desing
     Juan Manuel Sánchez Granados            Juan Manuel Sánchez Granados
     
-                            Ver: 0.2  GSoft 2025''')
+                            Ver: 0.3  GSoft 2026''')
 elif opt == '3':
     print('Saliendo...')
 else:
