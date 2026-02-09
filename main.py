@@ -23,7 +23,7 @@ print(r'''############################################################
 #                        \|_________|                      #
 #                                                          #
 ############################################################
-0.3 By Gsoft''')
+0.4 By Gsoft''')
 #Menú principal
 opt = input('\nBienvenido a TDATABASER ¿Qué desea hacer?\n1) Crear o conectar a base de datos\n2) Acerca de\n3) Cerrar')
 if opt == '1': #Opcion 1: Crear o conectarse a base de datos
@@ -55,7 +55,7 @@ a los registros de los clientes de excursiones turísticas.
             Programmer                           Application Desing
     Juan Manuel Sánchez Granados            Juan Manuel Sánchez Granados
     
-                            Ver: 0.3  GSoft 2026''')
+                            Ver: 0.4  GSoft 2026''')
 elif opt == '3':
     print('Saliendo...')
 else:

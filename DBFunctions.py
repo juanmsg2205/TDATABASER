@@ -13,13 +13,15 @@ class Database(object):
         FNAME VARCHAR(20),
         LNAME VARCHAR(20),
         PEOPLEQ SMALLINT,
+        CHILDQ SMALLINT,
+        TOTAL FLOAT,
         DEBT FLOAT,
         PAID FLOAT,
-        DATE DATE)'''
+        DATE TIMESTAMP)'''
         self.cursor.execute(script)
 
-    def add_reg(self, fname, lname, peopleq, debt, paid, date): #Declaracíon para la creación de un nuevo registro
-        script = f'INSERT INTO Excursion(FNAME, LNAME, PEOPLEQ, DEBT, PAID, DATE) VALUES ("{fname}","{lname}","{peopleq}", "{debt}", "{paid}", "{date}")'
+    def add_reg(self, fname, lname, peopleq, childq, total, debt, paid, date): #Declaracíon para la creación de un nuevo registro
+        script = f'INSERT INTO Excursion(FNAME, LNAME, PEOPLEQ, CHILDQ, TOTAL, DEBT, PAID, DATE) VALUES ("{fname}","{lname}","{peopleq}", "{childq}", "{total}", "{debt}", "{paid}", "{date}")'
         self.cursor.execute(script)
 
     def del_reg(self, fname): #Declaración para eliminar el registro
@@ -28,7 +30,7 @@ class Database(object):
 
     def myquery(self, fname): #Query para obtener un registro a partir del nombre de la persona
         fname = fname.lower()
-        script = f'SELECT * FROM Excursion WHERE LOWER(FNAME) = "{fname}"'
+        script = f'SELECT ID, FNAME, LNAME, PEOPLEQ, CHILDQ, TOTAL, DEBT, PAID, strftime("%d-%m-%Y",DATE, "unixepoch") FROM Excursion WHERE LOWER(FNAME) = "{fname}"'
         self.cursor.execute(script)
         query = self.cursor.fetchall()
         return query

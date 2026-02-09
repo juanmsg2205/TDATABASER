@@ -1,5 +1,7 @@
 import re
 import os
+import interface
+
 
 class FileSystem(object):
 
@@ -12,7 +14,7 @@ class FileSystem(object):
 
     def configc(self):
         dir = re.sub(r'\w*.db$', '', self.path) #Obtener ruta y archivo de configuración de la base de datos en el mismo directorio
-        config_path = f'{dir}dircf.txt'
+        config_path = f'{dir}dbconfig.txt'
 
         if os.path.exists(config_path) == True:  #Comprobar si existe el archivo de configuración de la base de datos en el mismo directorio.
             print('Archivo de configuración encontrado!')
