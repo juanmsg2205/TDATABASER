@@ -60,14 +60,20 @@ class Interface(object):
                 else: #Si el contador es 6, significa que el usurio introdujo exitosamente todos los valores, por lo tanto, se crea el registro en la base de datos
                     total_payment = float(personvalues[2])*self.cf1 + float(personvalues[3])*self.cf2
                     debt = total_payment - float(personvalues[4])
-                    self.dbconn.add_reg(personvalues[0], personvalues[1], personvalues[2], personvalues[3], total_payment, debt, personvalues[4], int(datetime.now().timestamp()))
+                    self.dbconn.add_reg(personvalues[0], personvalues[1], int(personvalues[2]), int(personvalues[3]), total_payment, debt, float(personvalues[4]), int(datetime.now().timestamp()))
                     print('Exito!')
 
             elif opt == '3': #Borrado de registro mediante nombre
                 self.clear_console()
                 fname = input('Introduzca el nombre de la persona:')
-                self.dbconn.del_reg(fname)
-                print('Exito')
+                confirmation = input("Introduzca si/no para confirmar o cancelar")
+                if confirmation.lower() == 'si':
+                    self.dbconn.del_reg(fname)
+                    print('Exito')
+                elif confirmation.lower() == 'no':
+                    print('Cancelado')
+                else:
+                    print('Se ha introducido otra opción, se ha cancelado por seguridad')
 
             elif opt == '4': #Guardar y salir
                 self.clear_console()
@@ -79,7 +85,7 @@ class Interface(object):
                 self.dbconn.closedb()
                 deactivator = True
 
-    def numeric_iv(self): #integer_inputvalidation, permite comprobar que las entradas sean numericas y realizar la cancelación de la operación
+    def numeric_iv(self): #Numeric_inputvalidation, permite comprobar que las entradas sean numericas y realizar la cancelación de la operación
         input_c = False #Variable que permite comprobar si la entrada es correcta (si lo es se sale del bucle)
         cancel = False #Variable que permite comprobar si la entrada se canceló (si se canceló se sale del bucle)
         while not input_c and not cancel:
@@ -112,11 +118,4 @@ class Interface(object):
             system('cls')
         else:
             system('clear')
-
-
-
-
-
-
-
 
