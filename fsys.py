@@ -1,7 +1,7 @@
 import re
 import os
-import interface
-
+import sys
+from server import DBTServer
 
 class FileSystem(object):
 
@@ -28,8 +28,16 @@ class FileSystem(object):
         else:  # Si no existe
             print('Archivo de configuración no encontrado')
             with open(config_path, 'w') as config: #Crear archivo de configuración en el mismo directorio de la base de datos
-                l1 = input("Introduzca el costo por persona:") #Introducir líneas de configuración
-                l2 = input("Introduzca el costo por niño:")
+                print("Introduzca el costo por persona:") #Introducir líneas de configuración
+                l1, cancelc = DBTServer.input_val()
+                if cancelc:
+                    os.remove(config_path)
+                    sys.exit(0)
+                print("Introduzca el costo por niño:")
+                l2, cancelc = DBTServer.input_val()
+                if cancelc:
+                    os.remove(config_path)
+                    sys.exit(0)
                 cf1 = float(l1) #Convertir líneas de configuración a números de punto flotante para su uso en la interfaz
                 cf2 = float(l2)
                 l1 = l1 + '\n' #Separador de líneas para su almacenamiento en el archivo de texto de configuración

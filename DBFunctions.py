@@ -39,6 +39,15 @@ class Database(object):
         query = self.cursor.fetchall()
         return query
 
+    def pay(self, pay, fname):
+        script = 'UPDATE Excursion SET PAID = PAID + ? WHERE FNAME = ?'
+        self.cursor.execute(script, (pay, fname))
+        self.update_debt(fname)
+
+    def update_debt(self, fname):
+        script = 'UPDATE Excursion SET DEBT = TOTAL - PAID WHERE FNAME = ?'
+        self.cursor.execute(script, (fname,))
+
     def closedb(self): #Cerrar la conexión con la base de datos sin guardar
         self.conn.close()
 

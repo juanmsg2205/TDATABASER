@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
 from os import system
+from server import DBTServer
 
 class Interface(object):
 
@@ -22,7 +23,7 @@ class Interface(object):
         deactivator = False #Variable que detiene la interfaz (finaliza el programa)
         while deactivator == False: #(Bucle de funcionamiento de la interfaz)
 
-            print('1)Consultar registro\n2)Agregar registro\n3)Eliminar registro\n4)Guardar y salir\n5)Salir sin guardar')
+            print('1)Consultar registro\n2)Agregar registro\n3)Eliminar registro\n5)Abonar\n6)Guardar y salir\n7)Salir sin guardar')
             opt = input() #Opcion por elegir
 
             if opt == '1':
@@ -42,24 +43,28 @@ class Interface(object):
                 self.clear_console()
                 personvalues = [0, 0, 0, 0, 0]
                 counter = 0 #Éste contador se utiliza para comprobar que la recolección de datos estuvo completa al contar cuantas veces se le pidió entrada al usuario
-                for num in range(0, 5):
-                    print(prompts[num]) #Imprimir los prompts de acuerdo con el numero de entrada
-                    if num < 2:
-                        personvalues[num], cancelc = self.string_iv()
-                        if cancelc: #Si el metodo string_iv (string_inputvalidation) retorna un true para cancelc (cancelcomprobation), entonces la entrada se cancela.
-                            break
-                    else:
-                        personvalues[num], cancelc = self.numeric_iv()
-                        if cancelc:
-                            break
+                try:
+                    for num in range(0, 5):
+                        print(prompts[num]) #Imprimir los prompts de acuerdo con el numero de entrada
+                        if num < 2:
+                            personvalues[num], cancelc = DBTServer.input_val(value_type='string')
+                            if cancelc: #Si el metodo string_iv (string_inputvalidation) retorna un true para cancelc (cancelcomprobation), entonces la entrada se cancela.
+                                break
+                        else:
+                            personvalues[num], cancelc = DBTServer.input_val()
+                            if cancelc:
+                                break
 
-                    counter = counter + 1
+                        counter = counter + 1
+
+                except ValueError as e:
+                    print(e)
 
                 if counter < 5: #Si el contador es menos de 6, es decir, se le pidieron menos de 6 entradas al usuario, entonces la entrada es incompleta y se cancela y se cancela para evitar la creación de registros basura
                     print("Entrada cancelada")
                 else: #Si el contador es 6, significa que el usurio introdujo exitosamente todos los valores, por lo tanto, se crea el registro en la base de datos
-                    total_payment = float(personvalues[2])*self.cf1 + float(personvalues[3])*self.cf2
-                    debt = total_payment - float(personvalues[4])
+                    total_payment = DBTServer.calc_total(self.cf1, self.cf2, float(personvalues[2]), float(personvalues[3]))
+                    debt = DBTServer.calc_debt(total_payment, float(personvalues[4]))
                     self.dbconn.add_reg(personvalues[0], personvalues[1], int(personvalues[2]), int(personvalues[3]), total_payment, debt, float(personvalues[4]), int(datetime.now().timestamp()))
                     print('Exito!')
 
@@ -75,43 +80,31 @@ class Interface(object):
                 else:
                     print('Se ha introducido otra opción, se ha cancelado por seguridad')
 
-            elif opt == '4': #Guardar y salir
+            elif opt == '5':
+                print('Introduzca el nombre de la persona')
+                try:
+                    fname, cancelc = DBTServer.input_val(value_type= 'string')
+                except ValueError as e:
+                    print(e)
+                print('Introduzca la cantidad a abonar')
+                try:
+                    pay, cancelc = DBTServer.input_val()
+                except ValueError as e:
+                    print(e)
+
+                self.dbconn.pay(pay, fname)
+                print('Exito!')
+
+            elif opt == '6': #Guardar y salir
                 self.clear_console()
                 self.dbconn.closedb_save()
                 deactivator = True
 
-            elif opt == '5': #Salir
+            elif opt == '7': #Salir
                 self.clear_console()
                 self.dbconn.closedb()
                 deactivator = True
 
-    def numeric_iv(self): #Numeric_inputvalidation, permite comprobar que las entradas sean numericas y realizar la cancelación de la operación
-        input_c = False #Variable que permite comprobar si la entrada es correcta (si lo es se sale del bucle)
-        cancel = False #Variable que permite comprobar si la entrada se canceló (si se canceló se sale del bucle)
-        while not input_c and not cancel:
-            integer_input = input("Introduzca el valor deseado (introduzca Q para quitar): ")
-            if integer_input.lower() == 'q': #Si la entrada es q, entonces se cancela la operación, se asigna true para cancel y se sale del bucle
-                cancel = True
-                print('Cancelado')
-            elif integer_input.isnumeric(): #Se comprueba si la entrada es numérica, se asigna true para input_comprobation y se sale del bucle
-                input_c = True
-            else: #En caso de que la entrada no sea numérica y no se haya cancelado con q, se le indica al usuario el error.
-                print('Su entrada podría contener carácteres alfabéticos o carácteres especiales, introduzca un valor numérico correcto')
-        return integer_input, cancel
-
-    def string_iv(self): #string_inputvalidation, permite comprobar que las entradas sean numericas y realizar la cancelación de la operación, funciona igual que integer_iv pero con lógica inversa
-        input_c = False
-        cancel = False
-        while not input_c and not cancel:
-            string_input = input("Introduzca el valor deseado (introduzca Q para quitar): ")
-            if string_input.lower() == 'q':
-                cancel = True
-                print('Cancelado')
-            elif not string_input.isnumeric():
-                input_c = True
-            else:
-                print('Su entrada podría contener números, introduzca un valor alfabético correcto')
-        return string_input, cancel
 
     def clear_console(self):
         if os.name == 'nt':
