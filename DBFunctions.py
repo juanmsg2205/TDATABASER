@@ -56,13 +56,13 @@ class Database(object):
         if self.cursor.rowcount == 0:
             message = 'No existe ese registro'
         else:
-            self.update_debt(fname)
+            self.update_debt(fname, lname)
             message = 'Exito!'
         return message
 
-    def update_debt(self, fname):
-        script = 'UPDATE Excursion SET DEBT = TOTAL - PAID WHERE FNAME = ?'
-        self.cursor.execute(script, (fname,))
+    def update_debt(self, fname, lname):
+        script = 'UPDATE Excursion SET DEBT = TOTAL - PAID WHERE LOWER(FNAME) = ? AND LOWER(LNAME) = ?'
+        self.cursor.execute(script, (fname, lname))
 
     def closedb(self): #Cerrar la conexión con la base de datos sin guardar
         self.conn.close()

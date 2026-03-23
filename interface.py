@@ -43,7 +43,7 @@ class Interface(object):
                 except IndexError: #Atrapar indexerror, el registro no existe
                     print("No existe ese registro")
 
-            if opt == '2':
+            elif opt == '2':
                 self.clear_console()
                 print('Base de datos')
                 self.retrieve_all()
@@ -123,32 +123,32 @@ class Interface(object):
             elif opt == '8':
                 self.clear_console()
                 info = f'''
-                1) Permite consultar un registro en específico en la base de datos a partir del nombre y apellido de la persona,
-                se obtiene la información completa: ID de registro, nombre, apellido, cantidad de personas, cantidad de niños, monto total,
-                deuda, monto pagado y fecha de registro.
-                2) Permite realizar una consulta completa de la base de datos, en donde se obtendrán todos los atributos anteriormente
-                mencionados de cada una de las personas en la base de datos en formato de lista.
-                3) Agrega un registro en la base de datos. Se le pedirá al usuario que ingrese los valores para cada atributo mencionado
-                en el punto número 1 a excepción de la deuda y el total, los cuales son calculados automáticamente, puede introducir \033[1mQ\033[0m
-                para cancelar.
-                4) Borre un registro específico de la base de datos a partir del nombre y apellido de la persona, se solicita confirmación
-                de operación al usuario para evitar errores de manejo.
-                5) Abone una cantidad a la cuenta de la persona a partir del nombre y apellido, después de ejecutar la operación
-                se recalcularán los montos.
-                6) Se guardarán los cambios en la base de datos y se saldrá del programa.
-                7) Se descartarán los cambios en la base de datos y se saldrá del programa.
+1) Permite consultar un registro en específico en la base de datos a partir del nombre y apellido de la persona,
+se obtiene la información completa: ID de registro, nombre, apellido, cantidad de personas, cantidad de niños, monto total,
+deuda, monto pagado y fecha de registro.
+2) Permite realizar una consulta completa de la base de datos, en donde se obtendrán todos los atributos anteriormente
+mencionados de cada una de las personas en la base de datos en formato de lista.
+3) Agrega un registro en la base de datos. Se le pedirá al usuario que ingrese los valores para cada atributo mencionado
+en el punto número 1 a excepción de la deuda y el total, los cuales son calculados automáticamente, puede introducir \033[1mQ\033[0m
+para cancelar.
+4) Borre un registro específico de la base de datos a partir del nombre y apellido de la persona, se solicita confirmación
+de operación al usuario para evitar errores de manejo.
+5) Abone una cantidad a la cuenta de la persona a partir del nombre y apellido, después de ejecutar la operación
+se recalcularán los montos.
+6) Se guardarán los cambios en la base de datos y se saldrá del programa.
+7) Se descartarán los cambios en la base de datos y se saldrá del programa.
                 
-                Notas adicionales:
-                - Las funciones "1)Consultar Registro", "4)Eliminar Registro", "5)Abonar" no distinguen
-                entre mayúsculas o minúsculas, la función "3)Agregar Registro" si lo hace.
+Notas adicionales:
+- Las funciones "1)Consultar Registro", "4)Eliminar Registro", "5)Abonar" no distinguen
+entre mayúsculas o minúsculas, la función "3)Agregar Registro" si lo hace.
                 
-                                                GSoft 2026
+                            GSoft 2026
                 '''
                 print(info)
                 input('\nPresione enter para continuar')
             else:
+                self.clear_console()
                 print('Opción inexistente')
-
 
     def clear_console(self):
         if os.name == 'nt':
