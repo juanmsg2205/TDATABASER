@@ -24,25 +24,41 @@ class Database(object):
         script = f'INSERT INTO Excursion(FNAME, LNAME, PEOPLEQ, CHILDQ, TOTAL, DEBT, PAID, DATE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
         self.cursor.execute(script, (fname, lname, peopleq, childq, total, debt, paid, date))
 
-    def del_reg(self, fname): #Declaración para eliminar el registro
-        script = f'DELETE FROM Excursion WHERE FNAME IN (?)'
-        self.cursor.execute(script, (fname,))
+    def del_reg(self, fname, lname): #Declaración para eliminar el registro
+        script = f'DELETE FROM Excursion WHERE LOWER(FNAME) = ? AND LOWER(LNAME) = ?'
+        self.cursor.execute(script, (fname, lname))
+        if self.cursor.rowcount == 0:
+            confirmation = 'No existe ese registro'
+        else:
+            confirmation = 'Exito!'
+        return confirmation
 
-    def myquery(self, fname): #Query para obtener un registro a partir del nombre de la persona
+    def myquery(self, fname, lname): #Query para obtener un registro a partir del nombre de la persona
         fname = fname.lower()
-        script = f'SELECT ID, FNAME, LNAME, PEOPLEQ, CHILDQ, TOTAL, DEBT, PAID, strftime("%d-%m-%Y",DATE, "unixepoch") FROM Excursion WHERE LOWER(FNAME) = ?'
-        self.cursor.execute(script, (fname,))
+        script = f'SELECT ID, FNAME, LNAME, PEOPLEQ, CHILDQ, TOTAL, DEBT, PAID, strftime("%d-%m-%Y",DATE, "unixepoch") FROM Excursion WHERE LOWER(FNAME) = ? AND LOWER(LNAME) = ?'
+        self.cursor.execute(script, (fname, lname))
         query = self.cursor.fetchall()
         return query
 
-    def getquery(self): #Retornar query
+    def get_all(self): #Retornar query completa
+        script = 'SELECT ID, FNAME, LNAME, PEOPLEQ, CHILDQ, TOTAL, DEBT, PAID, strftime("%d-%m-%Y",DATE, "unixepoch") FROM Excursion'
+        self.cursor.execute(script)
         query = self.cursor.fetchall()
-        return query
 
-    def pay(self, pay, fname):
-        script = 'UPDATE Excursion SET PAID = PAID + ? WHERE FNAME = ?'
-        self.cursor.execute(script, (pay, fname))
-        self.update_debt(fname)
+        if len(query) == 0:
+            return 0
+        else:
+            return query
+
+    def pay(self, pay, fname, lname):
+        script = 'UPDATE Excursion SET PAID = PAID + ? WHERE LOWER(FNAME) = ? AND LOWER(LNAME) = ?'
+        self.cursor.execute(script, (pay, fname, lname))
+        if self.cursor.rowcount == 0:
+            message = 'No existe ese registro'
+        else:
+            self.update_debt(fname)
+            message = 'Exito!'
+        return message
 
     def update_debt(self, fname):
         script = 'UPDATE Excursion SET DEBT = TOTAL - PAID WHERE FNAME = ?'
