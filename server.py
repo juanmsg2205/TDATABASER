@@ -9,7 +9,12 @@ class DBTServer():
         debt = total_payment - cov_payment
         return debt
 
-    def input_val(value_type = 'numeric'):
+    def input_val(value_type = 'numeric', cancel_return = False):
+        if cancel_return == True:
+            prompt = 'Introduzca el valor deseado (Introduzca Q para quitar): '
+        else:
+            prompt = 'Introduzca el valor deseado: '
+
         valid_t = {'numeric', 'string'}
         if value_type not in valid_t:
             raise ValueError(f"Error: Método input_validation no reconoce {value_type} como argumento válido.")
@@ -18,7 +23,7 @@ class DBTServer():
             input_c = False  # Variable que permite comprobar si la entrada es correcta (si lo es se sale del bucle)
             cancel = False  # Variable que permite comprobar si la entrada se canceló (si se canceló se sale del bucle)
             while not input_c and not cancel:
-                user_input = input("Introduzca el valor deseado (introduzca Q para quitar): ")
+                user_input = input(prompt)
                 if user_input.lower() == 'q':  # Si la entrada es q, entonces se cancela la operación, se asigna true para cancel y se sale del bucle
                     cancel = True
                     print('Cancelado')
@@ -32,7 +37,7 @@ class DBTServer():
             input_c = False
             cancel = False
             while not input_c and not cancel:
-                user_input = input("Introduzca el valor deseado (introduzca Q para quitar): ")
+                user_input = input(prompt)
                 if user_input.lower() == 'q':
                     cancel = True
                     print('Cancelado')
@@ -41,7 +46,11 @@ class DBTServer():
                 else:
                     print('Su entrada podría contener números, introduzca un valor alfabético correcto')
 
-        return user_input, cancel
+        if cancel_return:
+            return user_input, cancel
+        else:
+            return user_input
+
 
 
 
