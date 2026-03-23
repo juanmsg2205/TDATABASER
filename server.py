@@ -1,14 +1,16 @@
 class DBTServer():
-    @staticmethod
 
+    @staticmethod
     def calc_total(p_config, c_config, p_quantity, c_quantity):
         total_payment = p_config*p_quantity + c_config*c_quantity
         return total_payment
 
+    @staticmethod
     def calc_debt(total_payment, cov_payment):
         debt = total_payment - cov_payment
         return debt
 
+    @staticmethod
     def input_val(value_type = 'numeric', cancel_return = False):
         if cancel_return == True:
             prompt = 'Introduzca el valor deseado (Introduzca Q para quitar): '

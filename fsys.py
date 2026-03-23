@@ -15,8 +15,7 @@ class FileSystem(object):
             else:
                 print('Base de datos no encontrada.')
                 os.makedirs(dir_path)
-
-        self.path = fr'{dir_path}\db.db'
+            self.path = fr'{dir_path}\db.db'
 
     def dbc(self): #Comprobar si la base de datos existe
         dbexists = os.path.exists(self.path)
