@@ -2,11 +2,13 @@ from datetime import datetime
 import os
 from os import system
 from server import DBTServer
+from exporter import Exporter
 
 class Interface(object):
 
     def __init__(self, dbconn, fsys, cf1, cf2, format): #Constructor de interface a partir del objeto Database previamente creado en la clase main.
         self.dbconn = dbconn
+        self.fsys = fsys
         self.cf1 = cf1
         self.cf2 = cf2
         self.format = format
@@ -14,6 +16,7 @@ class Interface(object):
                   'Fecha']  # Atributos utilizados durante la operación "Consultar registro"
 
     def interface_init(self):
+        exporter = Exporter(self.fsys, self.dbconn)
         prompts = ['Introduzca el nombre de la persona:', #Prompts utilizados durante la operación "Agregar registro"
                    'Introduzca el apellido de la persona:',
                    "Cantidad de personas",
@@ -26,7 +29,7 @@ class Interface(object):
         deactivator = False #Variable que detiene la interfaz (finaliza el programa)
         while deactivator == False: #(Bucle de funcionamiento de la interfaz)
 
-            print('1)Consultar registro\n2)Consulta general\n3)Agregar registro\n4)Eliminar registro\n5)Abonar\n6)Guardar y salir\n7)Salir sin guardar\n8)Ayuda')
+            print('1)Consultar registro\n2)Consulta general\n3)Agregar registro\n4)Eliminar registro\n5)Abonar\n6)Guardar y salir\n7)Salir sin guardar\n8)Ayuda\n9)Exportar')
             opt = input() #Opcion por elegir
 
             if opt == '1':
@@ -59,10 +62,12 @@ class Interface(object):
                             personvalues[num], cancelc = DBTServer.input_val(value_type='string', cancel_return=True)
                             if cancelc: #Si el metodo string_iv (string_inputvalidation) retorna un true para cancelc (cancelcomprobation), entonces la entrada se cancela.
                                 break
-                        else:
-                            personvalues[num], cancelc = DBTServer.input_val(cancel_return=True)
+                        elif num == 2 or num == 3:
+                            personvalues[num], cancelc = DBTServer.input_val(cancel_return=True, decimals=False)
                             if cancelc:
                                 break
+                        elif num ==4:
+                            personvalues[num], cancelc = DBTServer.input_val(cancel_return=True, decimals=True)
 
                         counter = counter + 1
 
@@ -146,6 +151,20 @@ entre mayúsculas o minúsculas, la función "3)Agregar Registro" si lo hace.
                 '''
                 print(info)
                 input('\nPresione enter para continuar')
+
+            elif opt == '9':
+                print('Elija el formato:\n1)Excel\n2)CSV\n3)txt\n')
+                opt = input()
+                try:
+                    if opt =='1':
+                        exporter.export(self.fsys.name, type='excel')
+                    elif opt =='2':
+                        exporter.export(self.fsys.name, type='csv')
+                    elif opt == '3':
+                        exporter.export(self.fsys.name, type='txt')
+                except ValueError as e:
+                    print(e)
+
             else:
                 self.clear_console()
                 print('Opción inexistente')
@@ -153,7 +172,7 @@ entre mayúsculas o minúsculas, la función "3)Agregar Registro" si lo hace.
     def clear_console(self):
         if os.name == 'nt':
             system('cls')
-        else:
+        elif os.name == 'posix':
             system('clear')
 
     def retrieve_all(self):
