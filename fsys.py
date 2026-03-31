@@ -1,15 +1,21 @@
 import re
 import os
 import sys
+import os
 from server import DBTServer
 
 class FileSystem(object):
 
     def __init__(self, path, name, manual_path= True): #Crear objeto filesystem a partir de la ruta de la base de datos
+        self.name = name
+        if os.name == 'nt':
+            dir_path = fr'{os.path.expanduser('~')}\OneDrive\Documents\databases\{name}'
+        elif os.name == 'posix':
+            dir_path = fr'{os.path.expanduser('~')}/databases/{name}'
+
         if manual_path == True:
             self.path = path
         else:
-            dir_path = fr'{os.path.expanduser('~')}\OneDrive\Documents\databases\{name}'
             if os.path.exists(dir_path):
                 print('Base de datos encontrada!')
             else:
@@ -22,8 +28,8 @@ class FileSystem(object):
         return dbexists
 
     def configc(self):
-        dir = re.sub(r'\w*.db$', '', self.path) #Obtener ruta y archivo de configuración de la base de datos en el mismo directorio
-        config_path = f'{dir}dbconfig.txt'
+        self.dir = re.sub(r'\w*.db$', '', self.path) #Obtener ruta y archivo de configuración de la base de datos en el mismo directorio
+        config_path = f'{self.dir}dbconfig.txt'
         prompts = ["Introduzca el costo por persona:", "Introduzca el costo por niño:"]
 
         if os.path.exists(config_path) == True:  #Comprobar si existe el archivo de configuración de la base de datos en el mismo directorio.

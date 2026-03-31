@@ -1,3 +1,5 @@
+import re
+
 class DBTServer():
 
     @staticmethod
@@ -11,7 +13,8 @@ class DBTServer():
         return debt
 
     @staticmethod
-    def input_val(value_type = 'numeric', cancel_return = False):
+    def input_val(value_type = 'numeric', cancel_return = False, decimals = False):
+
         if cancel_return == True:
             prompt = 'Introduzca el valor deseado (Introduzca Q para quitar): '
         else:
@@ -26,10 +29,16 @@ class DBTServer():
             cancel = False  # Variable que permite comprobar si la entrada se canceló (si se canceló se sale del bucle)
             while not input_c and not cancel:
                 user_input = input(prompt)
+
+                if decimals == False:
+                    d_comprobation = None
+                else:
+                    d_comprobation = re.fullmatch(r'^\d*\.\d*', user_input)
+
                 if user_input.lower() == 'q':  # Si la entrada es q, entonces se cancela la operación, se asigna true para cancel y se sale del bucle
                     cancel = True
                     print('Cancelado')
-                elif user_input.isnumeric():  # Se comprueba si la entrada es numérica, se asigna true para input_comprobation y se sale del bucle
+                elif user_input.isnumeric() or d_comprobation != None:  # Se comprueba si la entrada es numérica, se asigna true para input_comprobation y se sale del bucle
                     input_c = True
                 else:  # En caso de que la entrada no sea numérica y no se haya cancelado con q, se le indica al usuario el error.
                     print(

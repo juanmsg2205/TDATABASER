@@ -23,7 +23,7 @@ def main():
     #                        \|_________|                      #
     #                                                          #
     ############################################################
-    0.5.6 By Gsoft''')
+    0.6.0 By Gsoft''')
     pathmode = False
     #Menú principal
     opt = input('\nBienvenido a TDATABASER ¿Qué desea hacer?\n1) Crear o conectar a base de datos\n2) Acerca de\n3) Cerrar\n4) Ayuda\n')
@@ -62,7 +62,7 @@ a los registros de los clientes de excursiones turísticas.
                 Programmer                           Application Desing
         Juan Manuel Sánchez Granados            Juan Manuel Sánchez Granados
         
-                                Ver: 0.5.6  GSoft 2026''')
+                                Ver: 0.6.0  GSoft 2026''')
         input('\nPresione enter para continuar')
     elif opt == '3':
         print('Saliendo...')
