@@ -1,4 +1,6 @@
 import re
+import os
+from os import system
 
 class DBTServer():
 
@@ -33,7 +35,7 @@ class DBTServer():
                 if decimals == False:
                     d_comprobation = None
                 else:
-                    d_comprobation = re.fullmatch(r'^\d*\.\d*', user_input)
+                    d_comprobation = re.fullmatch(r'^\d+\.\d+', user_input)
 
                 if user_input.lower() == 'q':  # Si la entrada es q, entonces se cancela la operación, se asigna true para cancel y se sale del bucle
                     cancel = True
@@ -61,6 +63,13 @@ class DBTServer():
             return user_input, cancel
         else:
             return user_input
+
+    @staticmethod
+    def clear_console():
+        if os.name == 'nt':
+            system('cls')
+        elif os.name == 'posix':
+            system('clear')
 
 
 
