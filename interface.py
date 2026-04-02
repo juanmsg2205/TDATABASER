@@ -1,6 +1,4 @@
 from datetime import datetime
-import os
-from os import system
 from server import DBTServer
 from exporter import Exporter
 
@@ -33,7 +31,7 @@ class Interface(object):
             opt = input() #Opcion por elegir
 
             if opt == '1':
-                self.clear_console()
+                DBTServer.clear_console()
 
                 fname = input('Introduzca el nombre de la persona:').lower()
                 lname = input('Introduzca el apellido de la persona:').lower()
@@ -47,12 +45,12 @@ class Interface(object):
                     print("No existe ese registro")
 
             elif opt == '2':
-                self.clear_console()
+                DBTServer.clear_console()
                 print('Base de datos')
                 self.retrieve_all()
 
             elif opt == '3':
-                self.clear_console()
+                DBTServer.clear_console()
                 personvalues = [0, 0, 0, 0, 0]
                 counter = 0 #Éste contador se utiliza para comprobar que la recolección de datos estuvo completa al contar cuantas veces se le pidió entrada al usuario
                 try:
@@ -83,7 +81,7 @@ class Interface(object):
                     print('Exito!')
 
             elif opt == '4': #Borrado de registro mediante nombre
-                self.clear_console()
+                DBTServer.clear_console()
                 print('Introduzca el nombre de la persona:')
                 fname = DBTServer.input_val(value_type='string', cancel_return=False).lower()
                 print('Introduzca el apellido de la persona:')
@@ -108,7 +106,7 @@ class Interface(object):
                     lname = DBTServer.input_val(value_type='string', cancel_return=False).lower()
 
                     print('Introduzca la cantidad a abonar')
-                    pay= DBTServer.input_val(cancel_return=False)
+                    pay= DBTServer.input_val(cancel_return=False, decimals=True)
                 except ValueError as e:
                     print(e)
 
@@ -117,16 +115,14 @@ class Interface(object):
 
 
             elif opt == '6': #Guardar y salir
-                self.clear_console()
                 self.dbconn.closedb_save()
                 deactivator = True
 
             elif opt == '7': #Salir
-                self.clear_console()
                 self.dbconn.closedb()
                 deactivator = True
             elif opt == '8':
-                self.clear_console()
+                DBTServer.clear_console()
                 info = f'''
 1) Permite consultar un registro en específico en la base de datos a partir del nombre y apellido de la persona,
 se obtiene la información completa: ID de registro, nombre, apellido, cantidad de personas, cantidad de niños, monto total,
@@ -166,14 +162,8 @@ entre mayúsculas o minúsculas, la función "3)Agregar Registro" si lo hace.
                     print(e)
 
             else:
-                self.clear_console()
+                DBTServer.clear_console()
                 print('Opción inexistente')
-
-    def clear_console(self):
-        if os.name == 'nt':
-            system('cls')
-        elif os.name == 'posix':
-            system('clear')
 
     def retrieve_all(self):
         valid_parameters = ['list', 'table']
@@ -202,6 +192,8 @@ entre mayúsculas o minúsculas, la función "3)Agregar Registro" si lo hace.
                         print(register[i], end='   ')
                     print()
 
+            t_total, d_total, p_total = self.dbconn.get_totals()
+            print(f'Total:{t_total}\nDeuda total:{d_total}\nTotal pagado:{p_total}\n')
 
 
 

@@ -29,7 +29,7 @@ class Exporter(object):
                 path = fr'{self.path}{name}.csv'
                 self.database_dataframe.to_csv(path)
 
-            elif type == 'txt':  #This option fails due it's still in progress
+            elif type == 'txt':
                 attributes = ['ID', 'Nombre', 'Apellido', 'No. Personas', 'No. Niños', 'Total', 'Deuda', 'Pagado',
                               'Fecha']
                 path = fr'{self.path}{name}.txt'

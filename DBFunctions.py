@@ -64,6 +64,13 @@ class Database(object):
         script = 'UPDATE Excursion SET DEBT = TOTAL - PAID WHERE LOWER(FNAME) = ? AND LOWER(LNAME) = ?'
         self.cursor.execute(script, (fname, lname))
 
+    def get_totals(self):
+        script = 'SELECT SUM(TOTAL), SUM(DEBT), SUM(PAID) FROM Excursion'
+        self.cursor.execute(script)
+        totals = self.cursor.fetchall()
+        full_total, debt_total, paid_total = totals[0][0], totals[0][1], totals[0][2]
+        return full_total, debt_total, paid_total
+
     def closedb(self): #Cerrar la conexión con la base de datos sin guardar
         self.conn.close()
 
