@@ -46,7 +46,7 @@ class Interface(object):
 
             elif opt == '2':
                 DBTServer.clear_console()
-                print('Base de datos')
+                print(f'BD:{self.fsys.name}     Precio Adulto:{self.fsys.cf1}       Precio Niño:{self.fsys.cf2}\n')
                 self.retrieve_all()
 
             elif opt == '3':
@@ -131,13 +131,16 @@ deuda, monto pagado y fecha de registro.
 mencionados de cada una de las personas en la base de datos en formato de lista.
 3) Agrega un registro en la base de datos. Se le pedirá al usuario que ingrese los valores para cada atributo mencionado
 en el punto número 1 a excepción de la deuda y el total, los cuales son calculados automáticamente, puede introducir \033[1mQ\033[0m
-para cancelar.
+para cancelar. Consideraciones importantes: El tercer y cuarto valor solo admite entradas de números enteros, el quinto, soporta
+enteros y decimales.
 4) Borre un registro específico de la base de datos a partir del nombre y apellido de la persona, se solicita confirmación
 de operación al usuario para evitar errores de manejo.
 5) Abone una cantidad a la cuenta de la persona a partir del nombre y apellido, después de ejecutar la operación
 se recalcularán los montos.
 6) Se guardarán los cambios en la base de datos y se saldrá del programa.
 7) Se descartarán los cambios en la base de datos y se saldrá del programa.
+8) Imprime ayuda.
+9)Permite exportar la base de datos en formato .xlsx, .csv y .txt, el archivo se localizará en la misma dirección de la base de datos.
                 
 Notas adicionales:
 - Las funciones "1)Consultar Registro", "4)Eliminar Registro", "5)Abonar" no distinguen
