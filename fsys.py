@@ -1,8 +1,9 @@
 import re
-import os
 import sys
 import os
 from server import DBTServer
+import tkinter
+from tkinter import messagebox
 
 class FileSystem(object):
 
@@ -37,23 +38,37 @@ class FileSystem(object):
 
         if os.path.exists(config_path) == True:  #Comprobar si existe el archivo de configuración de la base de datos en el mismo directorio.
             print('Archivo de configuración encontrado!')
-            with open(config_path, 'r') as config: #Leer el archivo de configuración si existe.
-                lines = []
-                for line in config: #Leer las líneas de configuración en el archivo
-                    lines.append(line) #Asignar los valores de las líneas a la lista
-                cf1 = float(lines[0].replace('\n', ''))  # Almacenar valores en una variable
-                cf2 = float(lines[1])
+            if self.config_file_comprobation(config_path):
+                with open(config_path, 'r') as config: #Leer el archivo de configuración si existe.
+                    lines = []
+                    for line in config: #Leer las líneas de configuración en el archivo
+                        lines.append(line[12:]) #Asignar los valores de las líneas a la lista
+                    cf1 = float(lines[0].replace('\n', ''))  # Almacenar valores en una variable
+                    cf2 = float(lines[1])
+                    self.cf1 = cf1
+                    self.cf2 = cf2
+            else:
+                root = tkinter.Tk()
+                root.withdraw()
+
+                ans = messagebox.askyesno('Error: 033', 'El archivo de configuración está dañado ¿Desea repararlo?')
+
+                if ans:
+                    os.remove(config_path)
+                    print('Archivo de configuración corrupto eliminado!')
+                    self.configc()
+                else:
+                    sys.exit(0)
 
         else:  # Si no existe
             print('Archivo de configuración no encontrado')
-
             config_lines = [0, 0]
             print() #Introducir líneas de configuración
 
             counter = 0
             for i in range(2):
                 print(prompts[i])
-                config_lines[i], cancelc = DBTServer.input_val(cancel_return= True)
+                config_lines[i], cancelc = DBTServer.input_val(cancel_return= True, decimals=True)
                 if cancelc:
                     break
 
@@ -62,20 +77,44 @@ class FileSystem(object):
             if counter < 2:
                 sys.exit(0)
             else:
+                line_names = ['adult_value:', 'child_value:']
                 cf1 = float(config_lines[0])  # Convertir líneas de configuración a números de punto flotante para su uso en la interfaz
                 cf2 = float(config_lines[1])
+                config_lines[0] = str(cf1)
+                config_lines[1] = str(cf2)
                 config_lines[0] = config_lines[0] + '\n'  # Separador de líneas para su almacenamiento en el archivo de texto de configuración
                 with open(config_path,'w') as config:  # Crear archivo de configuración en el mismo directorio de la base de datos
-                    for config_line in config_lines: #Escribir las líneas de configuración en el archivo creado
-                        config.write(str(config_line))
+                    for line_name, config_line in zip(line_names, config_lines): #Escribir las líneas de configuración en el archivo creado
+                        config.write(fr'{line_name}{config_line}')
+
+                self.cf1 = cf1
+                self.cf2 = cf2
 
             print('Exito!')
 
-        self.cf1 = cf1
-        self.cf2 = cf2
-
     def getcf(self): #Obtener valores de configuración para su uso en otras clases
         return self.cf1, self.cf2
+
+    def config_file_comprobation(self, config_path):
+        line_names = ['adult_value', 'child_value']
+        valid_count = 0
+        v_total = 2
+        with open(config_path, 'r') as config:
+            for config_line, line_name in zip(config, line_names):
+                if re.fullmatch(fr'{line_name}:\d+\.\d+', config_line) != None or re.fullmatch(fr'{line_name}:\d+\.\d+\n', config_line) != None:
+                    valid_count = valid_count + 1
+
+        print(f'Comprobación de archivo de configuración exitosa!\nLineas correctas:{valid_count}\nLineas incorrectas:{v_total - valid_count}')
+
+        if v_total == valid_count:
+            proceed = True
+        else:
+            proceed = False
+
+        return proceed
+
+
+
 
 
 

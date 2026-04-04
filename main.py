@@ -30,7 +30,7 @@ def main():
     #                        \|_________|                      #
     #                                                          #
     ############################################################
-    0.6.0 By Gsoft''')
+    0.6.5 By Gsoft''')
         opt = input('\nBienvenido a TDATABASER ¿Qué desea hacer?\n1) Crear o conectar a base de datos\n2) Acerca de\n3) Cerrar\n4) Ayuda\n')
         if opt == '1': #Opcion 1: Crear o conectarse a base de datos
             if path_mode:
@@ -68,7 +68,7 @@ def main():
                     Programmer                           Application Desing
             Juan Manuel Sánchez Granados            Juan Manuel Sánchez Granados
             
-                                    Ver: 0.6.0  GSoft 2026''')
+                                    Ver: 0.6.5  GSoft 2026''')
             input('\nPresione enter para continuar')
         elif opt == '3':
             print('Saliendo...')
@@ -76,20 +76,23 @@ def main():
         elif opt == '4':
             DBTServer.clear_console()
             info = r'''
-    1)(Modo ruta manual, actualmente inactivo) Escriba la ruta completa donde desee ubicar su base de datos y termine el nombrela db.db, de lo contrario
-    el programa podrá funcionar con errores o será complicado para usted obtener la ruta del programa. Es importante
-    la creación de una carpeta específica para guardar su base de datos, ya que el sistema de ficheros creará el archivo
-    de configuración como dbconfig.txt, este archivo estará ligado a la carpeta, por lo que crear dos bases de datos
-    en una misma carpeta provocará que ambas utilicen el mismo archivo de configuración.
+1)(Modo ruta manual, actualmente inactivo, SOLO DESARROLADOR) Escriba la ruta completa donde desee ubicar su base de datos y termine el nombrela db.db, de lo contrario
+el programa podrá funcionar con errores o será complicado para usted obtener la ruta del programa. Es importante
+la creación de una carpeta específica para guardar su base de datos, ya que el sistema de ficheros creará el archivo
+de configuración como dbconfig.txt, este archivo estará ligado a la carpeta, por lo que crear dos bases de datos
+en una misma carpeta provocará que ambas utilicen el mismo archivo de configuración.
             
-    Ejemplo:
-    C:\Users\Paquito\OneDrive\Documents\base-de-datos\db.db
+Ejemplo:
+C:\Users\Paquito\OneDrive\Documents\base-de-datos\db.db
             
-    (Modo ruta automática, actualmente activo) Escriba el nombre de su base de datos, se creará automáticamente una carpeta
-    con el nombre y se guardará la base de datos en la ruta C:\Users\(usuario actual)\Documents\databases. 
+(Modo ruta automática, actualmente activo) Escriba el nombre de su base de datos, se creará automáticamente una carpeta
+con el nombre y se guardará la base de datos en la ruta C:\Users\(usuario actual)\Documents\databases. 
             
-    2)Si desea modificar el monto de los precios de la excursión vaya a la carpeta donde guardó su base de datos
-    y modifique el archivo dbconfig.txt, la primera línea es el precio por adulto y la segunda, el precio por niño.'''
+2)Si desea modificar el monto de los precios de la excursión vaya a la carpeta donde guardó su base de datos
+y modifique el archivo dbconfig.txt, la primera línea es el precio por adulto y la segunda, el precio por niño.
+(AVISO) MODIFIQUE SOLO EL VALOR NUMERICO CON EL FORMATO CORRECTO ([Cualquier cantidad de digitos].[Cualquier cantidad de digitos]).
+es decir, formato decimal. Si el archivo de configuracion no tiene el formato correcto, se señalará en el proceso de carga de la
+base de datos y ofrecerá la opción de repararlo.'''
 
             print(info)
             input('\nPresione enter para salir')
