@@ -1,3 +1,5 @@
+import sqlite3
+
 from DBFunctions import Database
 from interface import Interface
 from fsys import FileSystem
@@ -30,7 +32,7 @@ def main():
     #                        \|_________|                      #
     #                                                          #
     ############################################################
-    0.6.5 By Gsoft''')
+    0.7.0 By Gsoft''')
         opt = input('\nBienvenido a TDATABASER ¿Qué desea hacer?\n1) Crear o conectar a base de datos\n2) Acerca de\n3) Cerrar\n4) Ayuda\n')
         if opt == '1': #Opcion 1: Crear o conectarse a base de datos
             if path_mode:
@@ -43,22 +45,23 @@ def main():
                 file_sys = FileSystem('none',name, manual_path=path_mode)
 
             print('Exito!')
-            db = Database(file_sys.path) #Creación de un objeto Database con la ruta como argumento para la conexión o creación con la base de datos
-            print('Comprobación de fichero...')
-            dbexists = file_sys.dbc() #Comprueba si la base de datos existe
-            if dbexists == True: #Si existe
-                print('Comprobación exitosa!')
-                print('Iniciando base de datos...')
-                db.create_table() #Crea la tabla principal
-                print('Exito!')
-                print('Buscando archivo de configuración...')
-                file_sys.configc() #Busca el archivo de configuración y comprueba su existencia (ver fsys.py)
-                cf1, cf2 = file_sys.getcf() #Asigna las líneas de configuración a las variables para iniciar la interfaz
-                print('Iniciando interfaz...')
-                interface = Interface(db, file_sys, cf1, cf2, 'list') #Crea la interfaz a partir del objeto Database, fsys y las líneas de configuración
-                interface.interface_init() #Inicializa la interfaz
-            else:
-                print('Error 011: El fichero no existe o la ruta es inválida.')
+            try:
+                db = Database(file_sys.path) #Creación de un objeto Database con la ruta como argumento para la conexión o creación con la base de datos
+                print('Comprobación de fichero...')
+                dbexists = file_sys.dbc() #Comprueba si la base de datos existe
+                if dbexists == True: #Si existe
+                    print('Comprobación exitosa!')
+                    print('Iniciando base de datos...')
+                    db.create_table() #Crea la tabla principal
+                    print('Exito!')
+                    print('Buscando archivo de configuración...')
+                    file_sys.configc() #Busca el archivo de configuración y comprueba su existencia (ver fsys.py)
+                    cf1, cf2, config_format = file_sys.getcf() #Asigna las líneas de configuración a las variables para iniciar la interfaz
+                    print('Iniciando interfaz...')
+                    interface = Interface(db, file_sys, cf1, cf2, config_format) #Crea la interfaz a partir del objeto Database, fsys y las líneas de configuración
+                    interface.interface_init() #Inicializa la interfaz
+            except(sqlite3.Error, sqlite3.OperationalError) as e:
+                print('Ha habido un problema al intentar conectarse a la base de datos:\n', e)
                 print('Saliendo...')
         elif opt == '2':
             DBTServer.clear_console()
@@ -68,7 +71,7 @@ def main():
                     Programmer                           Application Desing
             Juan Manuel Sánchez Granados            Juan Manuel Sánchez Granados
             
-                                    Ver: 0.6.5  GSoft 2026''')
+                                    Ver: 0.7.0  GSoft 2026''')
             input('\nPresione enter para continuar')
         elif opt == '3':
             print('Saliendo...')

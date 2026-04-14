@@ -1,15 +1,16 @@
 from datetime import datetime
 from server import DBTServer
 from exporter import Exporter
+from grapher import DBgrapher
 
 class Interface(object):
 
-    def __init__(self, dbconn, fsys, cf1, cf2, format): #Constructor de interface a partir del objeto Database previamente creado en la clase main.
+    def __init__(self, dbconn, fsys, cf1, cf2, config_format): #Constructor de interface a partir del objeto Database previamente creado en la clase main.
         self.dbconn = dbconn
         self.fsys = fsys
         self.cf1 = cf1
         self.cf2 = cf2
-        self.format = format
+        self.config_format = config_format
         self.attributes = ['ID', 'Nombre', 'Apellido', 'No. Personas', 'No. Niños', 'Total', 'Deuda', 'Pagado',
                   'Fecha']  # Atributos utilizados durante la operación "Consultar registro"
 
@@ -27,7 +28,7 @@ class Interface(object):
         deactivator = False #Variable que detiene la interfaz (finaliza el programa)
         while deactivator == False: #(Bucle de funcionamiento de la interfaz)
 
-            print('1)Consultar registro\n2)Consulta general\n3)Agregar registro\n4)Eliminar registro\n5)Abonar\n6)Guardar y salir\n7)Salir sin guardar\n8)Ayuda\n9)Exportar')
+            print('1)Consultar registro\n2)Consulta general\n3)Agregar registro\n4)Eliminar registro\n5)Abonar\n6)Guardar y salir\n7)Salir sin guardar\n8)Ayuda\n9)Exportar\n10)Configuración\n11)Graficar')
             opt = input() #Opcion por elegir
 
             if opt == '1':
@@ -66,6 +67,8 @@ class Interface(object):
                                 break
                         elif num ==4:
                             personvalues[num], cancelc = DBTServer.input_val(cancel_return=True, decimals=True)
+                            if cancelc:
+                                break
 
                         counter = counter + 1
 
@@ -152,6 +155,7 @@ entre mayúsculas o minúsculas, la función "3)Agregar Registro" si lo hace.
                 input('\nPresione enter para continuar')
 
             elif opt == '9':
+                DBTServer.clear_console()
                 print('Elija el formato:\n1)Excel\n2)CSV\n3)txt\n')
                 opt = input()
                 try:
@@ -164,14 +168,91 @@ entre mayúsculas o minúsculas, la función "3)Agregar Registro" si lo hace.
                 except ValueError as e:
                     print(e)
 
+            elif opt == '10':
+                DBTServer.clear_console()
+                config_list = [self.cf1, self.cf2, self.config_format]
+                config_menu_cancel = False
+                while not config_menu_cancel:
+                    print(f'1)Precio adulto:{config_list[0]}\n2)Precio niño:{config_list[1]}\n3)Formato consulta:{config_list[2]}\n4)Salir\n')
+                    menu = input()
+
+                    if menu == '1':
+                        temp_value, cancelc = self.console_clear_Ivalue()
+                        if cancelc:
+                            pass
+                        else:
+                            config_list[0] = float(temp_value)
+
+                    elif menu == '2':
+                        temp_value, cancelc = self.console_clear_Ivalue()
+                        if cancelc:
+                            pass
+                        else:
+                            config_list[1] = float(temp_value)
+
+                    elif menu == '3':
+                        format_deactivator = False
+                        while not format_deactivator:
+                            print_format = input('Elija el valor:\n1)Lista\n2)Tabla\n')
+
+                            if print_format == '1':
+                                config_list[2] = 'list'
+                                format_deactivator = True
+                            elif print_format == '2':
+                                config_list[2] = 'table'
+                                format_deactivator = True
+                            else:
+                                print('Opción inexistente')
+
+                    elif menu == '4':
+                        past_config = self.retrieve_config_list()
+                        counter = 0
+                        for i, config_element in enumerate(config_list):
+                            if past_config[i] == config_element:
+                                counter = counter + 1
+
+                        if counter == 3:
+                            config_menu_cancel = True
+                            DBTServer.clear_console()
+                        else:
+                            decision_deactivation = False
+                            while not decision_deactivation:
+                                decision = input('Se han encontrado cambios en la configuración, ¿Deseas guardarlos? si/no')
+
+                                if decision.lower() == 'si':
+                                    self.fsys.change_config(config_list[0], config_list[1], config_list[2])
+                                    self.cf1 = config_list[0]
+                                    self.cf2 = config_list[1]
+                                    self.config_format = config_list[2]
+
+                                    print('Cambios guardados!')
+                                    config_menu_cancel = True
+                                    break
+
+                                elif decision.lower() == 'no':
+                                    print('Cambios no guardados')
+                                    config_menu_cancel = True
+                                    break
+
+                                else:
+                                    print('Opción incorrecta')
+
+                    else:
+                        print('Inexistente')
+
+
+            elif opt == '11':
+                grapher = DBgrapher(self.dbconn)
+                grapher.desc_debt_graph()
+                DBTServer.clear_console()
             else:
                 DBTServer.clear_console()
                 print('Opción inexistente')
 
     def retrieve_all(self):
         valid_parameters = ['list', 'table']
-        if self.format not in valid_parameters:
-            raise ValueError(f'El parámetro {self.format} no es un parámetro válido para retreive_all format.')
+        if self.config_format not in valid_parameters:
+            raise ValueError(f'El parámetro {self.config_format} no es un parámetro válido para retreive_all format.')
         else:
             query = self.dbconn.get_all()
 
@@ -179,7 +260,7 @@ entre mayúsculas o minúsculas, la función "3)Agregar Registro" si lo hace.
             print('No hay nada en la base de datos')
 
         else:
-            if self.format == 'list':
+            if self.config_format == 'list':
                 for register in query:
                     for i in range(9):
                         print(f'{self.attributes[i]}: {register[i]}')
@@ -197,6 +278,13 @@ entre mayúsculas o minúsculas, la función "3)Agregar Registro" si lo hace.
 
             t_total, d_total, p_total = self.dbconn.get_totals()
             print(f'Total:{t_total}\nDeuda total:{d_total}\nTotal pagado:{p_total}\n')
+
+    def console_clear_Ivalue(self):
+        DBTServer.clear_console()
+        return DBTServer.input_val(decimals=True, cancel_return=True)
+
+    def retrieve_config_list(self):
+        return [self.cf1, self.cf2, self.config_format]
 
 
 

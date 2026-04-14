@@ -71,6 +71,11 @@ class Database(object):
         full_total, debt_total, paid_total = totals[0][0], totals[0][1], totals[0][2]
         return full_total, debt_total, paid_total
 
+    def debt_desc(self):
+        script = 'SELECT FNAME, LNAME, DEBT FROM Excursion ORDER BY DEBT DESC LIMIT 10'
+        debt_desc = self.cursor.execute(script)
+        return debt_desc
+
     def closedb(self): #Cerrar la conexión con la base de datos sin guardar
         self.conn.close()
 
