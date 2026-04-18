@@ -32,7 +32,7 @@ def main():
     #                        \|_________|                      #
     #                                                          #
     ############################################################
-    0.7.0 By Gsoft''')
+    0.7.5 By Gsoft''')
         opt = input('\nBienvenido a TDATABASER ¿Qué desea hacer?\n1) Crear o conectar a base de datos\n2) Acerca de\n3) Cerrar\n4) Ayuda\n')
         if opt == '1': #Opcion 1: Crear o conectarse a base de datos
             if path_mode:
@@ -56,9 +56,9 @@ def main():
                     print('Exito!')
                     print('Buscando archivo de configuración...')
                     file_sys.configc() #Busca el archivo de configuración y comprueba su existencia (ver fsys.py)
-                    cf1, cf2, config_format = file_sys.getcf() #Asigna las líneas de configuración a las variables para iniciar la interfaz
+                    cf1, cf2, config_format, autosave = file_sys.getcf() #Asigna las líneas de configuración a las variables para iniciar la interfaz
                     print('Iniciando interfaz...')
-                    interface = Interface(db, file_sys, cf1, cf2, config_format) #Crea la interfaz a partir del objeto Database, fsys y las líneas de configuración
+                    interface = Interface(db, file_sys, cf1, cf2, config_format, autosave) #Crea la interfaz a partir del objeto Database, fsys y las líneas de configuración
                     interface.interface_init() #Inicializa la interfaz
             except(sqlite3.Error, sqlite3.OperationalError) as e:
                 print('Ha habido un problema al intentar conectarse a la base de datos:\n', e)
@@ -71,7 +71,7 @@ def main():
                     Programmer                           Application Desing
             Juan Manuel Sánchez Granados            Juan Manuel Sánchez Granados
             
-                                    Ver: 0.7.0  GSoft 2026''')
+                                    Ver: 0.7.5  GSoft 2026''')
             input('\nPresione enter para continuar')
         elif opt == '3':
             print('Saliendo...')

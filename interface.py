@@ -5,14 +5,16 @@ from grapher import DBgrapher
 
 class Interface(object):
 
-    def __init__(self, dbconn, fsys, cf1, cf2, config_format): #Constructor de interface a partir del objeto Database previamente creado en la clase main.
+    def __init__(self, dbconn, fsys, cf1, cf2, config_format, autosave): #Constructor de interface a partir del objeto Database previamente creado en la clase main.
         self.dbconn = dbconn
         self.fsys = fsys
         self.cf1 = cf1
         self.cf2 = cf2
         self.config_format = config_format
+        self.autosave = autosave
         self.attributes = ['ID', 'Nombre', 'Apellido', 'No. Personas', 'No. Niños', 'Total', 'Deuda', 'Pagado',
                   'Fecha']  # Atributos utilizados durante la operación "Consultar registro"
+        self.dbconn.autosave = self.autosave
 
     def interface_init(self):
         exporter = Exporter(self.fsys, self.dbconn)
@@ -170,10 +172,10 @@ entre mayúsculas o minúsculas, la función "3)Agregar Registro" si lo hace.
 
             elif opt == '10':
                 DBTServer.clear_console()
-                config_list = [self.cf1, self.cf2, self.config_format]
+                config_list = [self.cf1, self.cf2, self.config_format, self.autosave]
                 config_menu_cancel = False
                 while not config_menu_cancel:
-                    print(f'1)Precio adulto:{config_list[0]}\n2)Precio niño:{config_list[1]}\n3)Formato consulta:{config_list[2]}\n4)Salir\n')
+                    print(f'1)Precio adulto:{config_list[0]}\n2)Precio niño:{config_list[1]}\n3)Formato consulta:{config_list[2]}\n4)Autoguardado:{config_list[3]}\n5)Salir\n')
                     menu = input()
 
                     if menu == '1':
@@ -193,25 +195,39 @@ entre mayúsculas o minúsculas, la función "3)Agregar Registro" si lo hace.
                     elif menu == '3':
                         format_deactivator = False
                         while not format_deactivator:
-                            print_format = input('Elija el valor:\n1)Lista\n2)Tabla\n')
+                            config_format = input('Elija el valor:\n1)Lista\n2)Tabla\n')
 
-                            if print_format == '1':
+                            if config_format == '1':
                                 config_list[2] = 'list'
                                 format_deactivator = True
-                            elif print_format == '2':
+                            elif config_format == '2':
                                 config_list[2] = 'table'
                                 format_deactivator = True
                             else:
                                 print('Opción inexistente')
 
                     elif menu == '4':
+                        autosave_menu_deactivator = False
+                        while not autosave_menu_deactivator:
+                            config_autosave = input('Elija el valor\n1)Si\n2)No\n')
+
+                            if config_autosave == '1':
+                                config_list[3] = True
+                                autosave_menu_deactivator = True
+                            elif config_autosave == '2':
+                                config_list[3] = False
+                                autosave_menu_deactivator = True
+                            else:
+                                print('Opción inexistente')
+
+                    elif menu == '5':
                         past_config = self.retrieve_config_list()
                         counter = 0
                         for i, config_element in enumerate(config_list):
                             if past_config[i] == config_element:
                                 counter = counter + 1
 
-                        if counter == 3:
+                        if counter == 4:
                             config_menu_cancel = True
                             DBTServer.clear_console()
                         else:
@@ -220,10 +236,12 @@ entre mayúsculas o minúsculas, la función "3)Agregar Registro" si lo hace.
                                 decision = input('Se han encontrado cambios en la configuración, ¿Deseas guardarlos? si/no')
 
                                 if decision.lower() == 'si':
-                                    self.fsys.change_config(config_list[0], config_list[1], config_list[2])
+                                    self.fsys.change_config(config_list[0], config_list[1], config_list[2], config_list[3])
                                     self.cf1 = config_list[0]
                                     self.cf2 = config_list[1]
                                     self.config_format = config_list[2]
+                                    self.autosave = bool(config_list[3])
+                                    self.dbconn.autosave = bool(config_list[3])
 
                                     print('Cambios guardados!')
                                     config_menu_cancel = True
@@ -243,8 +261,23 @@ entre mayúsculas o minúsculas, la función "3)Agregar Registro" si lo hace.
 
             elif opt == '11':
                 grapher = DBgrapher(self.dbconn)
-                grapher.desc_debt_graph()
+
+                graph_option = input('Seleccione la gráfica:\n1)10 mayores deudores\n2)Pagado VS Total\n3)Pagado VS Deuda Total\n')
+
+                if graph_option == '1':
+                    grapher.graph_data('debtors')
+
+                elif graph_option == '2':
+                    grapher.graph_data('paid_vs_total')
+
+                elif graph_option == '3':
+                    grapher.graph_data('paid_vs_total_all')
+
+                else:
+                    print('Opción inexistente')
+
                 DBTServer.clear_console()
+
             else:
                 DBTServer.clear_console()
                 print('Opción inexistente')
@@ -284,7 +317,7 @@ entre mayúsculas o minúsculas, la función "3)Agregar Registro" si lo hace.
         return DBTServer.input_val(decimals=True, cancel_return=True)
 
     def retrieve_config_list(self):
-        return [self.cf1, self.cf2, self.config_format]
+        return [self.cf1, self.cf2, self.config_format, self.autosave]
 
 
 
