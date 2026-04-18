@@ -2,10 +2,11 @@ import sqlite3 as sql
 
 class Database(object):
 
-    def __init__(self, dbpath): #Creación de objeto Database a partir de la ruta de la base de datos
+    def __init__(self, dbpath, autosave = False): #Creación de objeto Database a partir de la ruta de la base de datos
         self.dbpath = dbpath
         self.conn = sql.connect(self.dbpath) #Conectar a la base de datos
         self.cursor = self.conn.cursor() #Inicializar el cursosr de la base de datos
+        self.autosave = autosave
 
     def create_table(self): #Declaración para la creación de la tabla
         script = '''CREATE TABLE IF NOT EXISTS Excursion(
@@ -24,6 +25,8 @@ class Database(object):
         script = f'INSERT INTO Excursion(FNAME, LNAME, PEOPLEQ, CHILDQ, TOTAL, DEBT, PAID, DATE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
         self.cursor.execute(script, (fname, lname, peopleq, childq, total, debt, paid, date))
 
+        if self.autosave: self.conn.commit()
+
     def del_reg(self, fname, lname): #Declaración para eliminar el registro
         script = f'DELETE FROM Excursion WHERE LOWER(FNAME) = ? AND LOWER(LNAME) = ?'
         self.cursor.execute(script, (fname, lname))
@@ -31,6 +34,9 @@ class Database(object):
             confirmation = 'No existe ese registro'
         else:
             confirmation = 'Exito!'
+
+        if self.autosave: self.conn.commit()
+
         return confirmation
 
     def myquery(self, fname, lname): #Query para obtener un registro a partir del nombre de la persona
@@ -58,6 +64,9 @@ class Database(object):
         else:
             self.update_debt(fname, lname)
             message = 'Exito!'
+
+        if self.autosave: self.conn.commit()
+
         return message
 
     def update_debt(self, fname, lname):
@@ -71,10 +80,15 @@ class Database(object):
         full_total, debt_total, paid_total = totals[0][0], totals[0][1], totals[0][2]
         return full_total, debt_total, paid_total
 
-    def debt_desc(self):
+    def debt_desc_g(self):
         script = 'SELECT FNAME, LNAME, DEBT FROM Excursion ORDER BY DEBT DESC LIMIT 10'
         debt_desc = self.cursor.execute(script)
         return debt_desc
+
+    def debt_vs_paid(self):
+        script = 'SELECT FNAME, LNAME, TOTAL, PAID FROM Excursion ORDER BY DEBT DESC LIMIT 10'
+        debt_vs_paid = self.cursor.execute(script)
+        return debt_vs_paid
 
     def closedb(self): #Cerrar la conexión con la base de datos sin guardar
         self.conn.close()

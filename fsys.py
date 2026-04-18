@@ -27,7 +27,7 @@ class FileSystem(object):
             elif os.name == 'posix':
                 self.path = fr'{dir_path}/db.db'
 
-        self.line_names = ['adult_value:', 'child_value:', 'disp_format:']
+        self.line_names = ['adult_value:', 'child_value:', 'disp_format:', '__autosave_:']
 
     def dbc(self): #Comprobar si la base de datos existe
         dbexists = os.path.exists(self.path)
@@ -47,10 +47,15 @@ class FileSystem(object):
                         lines.append(line[12:]) #Asignar los valores de las líneas a la lista
                     cf1 = float(lines[0].replace('\n', ''))  # Almacenar valores en una variable
                     cf2 = float(lines[1].replace('\n', ''))
-                    cf3 = lines[2]
+                    cf3 = lines[2].replace('\n', '')
+                    cf4 = lines[3]
                     self.cf1 = cf1
                     self.cf2 = cf2
                     self.cf3 = cf3
+
+                    if cf4 == 'False': self.cf4 = False
+                    else: self.cf4 = bool(cf4)
+
             else:
                 root = tkinter.Tk()
                 root.withdraw()
@@ -66,7 +71,7 @@ class FileSystem(object):
 
         else:  # Si no existe
             print('Archivo de configuración no encontrado')
-            config_lines = [0, 0, '']
+            config_lines = [0, 0, '', False]
             print() #Introducir líneas de configuración
 
             counter = 0
@@ -88,8 +93,10 @@ class FileSystem(object):
                 cf3 = 'list'
                 config_lines[0] = str(cf1)
                 config_lines[1] = str(cf2)
+                config_lines[3] = str(config_lines[3])
                 config_lines[0] = config_lines[0] + '\n'  # Separador de líneas para su almacenamiento en el archivo de texto de configuración
                 config_lines[1] = config_lines[1] + '\n'
+                config_lines[2] = config_lines[2] + '\n'
                 with open(self.config_path,'w') as config:  # Crear archivo de configuración en el mismo directorio de la base de datos
                     for line_name, config_line in zip(self.line_names, config_lines): #Escribir las líneas de configuración en el archivo creado
                         config.write(fr'{line_name}{config_line}')
@@ -97,14 +104,16 @@ class FileSystem(object):
                 self.cf1 = cf1
                 self.cf2 = cf2
                 self.cf3 = cf3
+                self.cf4 = config_lines[3]
 
             print('Exito!')
 
-    def change_config(self, cf1, cf2, disp_format):
+    def change_config(self, cf1, cf2, disp_format, autosave):
         #Agregar codigo
-        config_lines = [str(cf1), str(cf2), disp_format]
+        config_lines = [str(cf1), str(cf2), disp_format, str(autosave)]
         config_lines[0] = config_lines[0] + '\n'  # Separador de líneas para su almacenamiento en el archivo de texto de configuración
         config_lines[1] = config_lines[1] + '\n'
+        config_lines[2] = config_lines[2] + '\n'
         with open(self.config_path,'w') as config:  # Crear archivo de configuración en el mismo directorio de la base de datos
             for line_name, config_line in zip(self.line_names,config_lines):  # Escribir las líneas de configuración en el archivo creado
                 config.write(fr'{line_name}{config_line}')
@@ -112,17 +121,19 @@ class FileSystem(object):
         self.cf1 = cf1
         self.cf2 = cf2
         self.cf3 = disp_format
+        if not config_lines[3]: self.cf4 = False
+        else: self.cf4 = bool(autosave)
 
     def getcf(self): #Obtener valores de configuración para su uso en otras clases
-        return self.cf1, self.cf2, self.cf3
+        return self.cf1, self.cf2, self.cf3, self.cf4
 
     def config_file_comprobation(self, config_path):
-        line_names = ['adult_value', 'child_value', 'disp_format']
+        line_names = ['adult_value', 'child_value', 'disp_format', '__autosave_']
         valid_count = 0
-        v_total = 3
+        v_total = 4
         with open(config_path, 'r') as config:
             for config_line, line_name in zip(config, line_names):
-                if re.fullmatch(fr'{line_name}:\d+\.\d+\n', config_line) != None or re.fullmatch(fr'{line_name}:(list|table)', config_line) != None:
+                if re.fullmatch(fr'{line_name}(:\d+\.\d+\n|:\d+\.\d+)', config_line) != None or re.fullmatch(fr'({line_name}:(list|table)\n|{line_name}:(False|True))', config_line) != None:
                     valid_count = valid_count + 1
 
         print(f'Comprobación de archivo de configuración exitosa!\nLineas correctas:{valid_count}\nLineas incorrectas:{v_total - valid_count}')
